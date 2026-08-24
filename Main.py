@@ -5,7 +5,6 @@ import yt_dlp
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
 
-# Render ഡെപ്ലോയ്‌മെന്റ് പരാജയപ്പെടാതിരിക്കാൻ ഒരു ചെറിയ വെബ് സെർവർ
 class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         self.send_response(200)

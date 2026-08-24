@@ -17,9 +17,8 @@ def run_web_server():
     server = HTTPServer(('0.0.0.0', port), SimpleHTTPRequestHandler)
     server.serve_forever()
 
-# ---- നിങ്ങളുടെ വിവരങ്ങൾ നൽകുക ----
 BOT_TOKEN = '8850071921:AAE085nHB0iW0hIPi1Ih_pY2EV1-ZprAM3o'
-MY_USER_ID = 1415979751
+MY_USER_ID = 1415979751  
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text('Hello! Send me any Instagram link, and I will download the video for you.')
@@ -65,10 +64,7 @@ async def download_instagram(update: Update, context: ContextTypes.DEFAULT_TYPE)
         await status_msg.edit_text("Could not download video. Make sure the link is from a public post.")
 
 if __name__ == '__main__':
-    # വെബ് സെർവർ ബാക്ക്ഗ്രൗണ്ടിൽ റൺ ചെയ്യുന്നു
     threading.Thread(target=run_web_server, daemon=True).start()
-    
-    # ടെലിഗ്രാം ബോട്ട് റൺ ചെയ്യുന്നു
     app = ApplicationBuilder().token(BOT_TOKEN).build()
     app.add_handler(CommandHandler("start", start))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, download_instagram))

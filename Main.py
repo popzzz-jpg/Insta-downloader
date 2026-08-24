@@ -18,8 +18,8 @@ def run_web_server():
     server.serve_forever()
 
 # ---- നിങ്ങളുടെ വിവരങ്ങൾ നൽകുക ----
-BOT_TOKEN = 'ഇവിടെ_നിങ്ങളുടെ_BOT_TOKEN_നൽകുക'
-MY_USER_ID = 123456789  # നിങ്ങളുടെ USER ID നൽകുക
+BOT_TOKEN = '8850071921:AAE085nHB0iW0hIPi1Ih_pY2EV1-ZprAM3o'
+MY_USER_ID = 1415979751
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text('Hello! Send me any Instagram link, and I will download the video for you.')

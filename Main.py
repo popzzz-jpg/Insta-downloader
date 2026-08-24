@@ -1,11 +1,25 @@
 import os
+import threading
+from http.server import HTTPServer, BaseHTTPRequestHandler
 import yt_dlp
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
 
+# Render ഡെപ്ലോയ്‌മെന്റ് പരാജയപ്പെടാതിരിക്കാൻ ഒരു ചെറിയ വെബ് സെർവർ
+class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(b"Bot is alive!")
+
+def run_web_server():
+    port = int(os.environ.get("PORT", 10000))
+    server = HTTPServer(('0.0.0.0', port), SimpleHTTPRequestHandler)
+    server.serve_forever()
+
 # ---- നിങ്ങളുടെ വിവരങ്ങൾ നൽകുക ----
-BOT_TOKEN = '8850071921:AAE085nHB0iW0hIPi1Ih_pY2EV1-ZprAM3o'
-MY_USER_ID = 1415979751  # ഇവിടെ നിങ്ങളുടെ USER_ID നൽകുക
+BOT_TOKEN = 'ഇവിടെ_നിങ്ങളുടെ_BOT_TOKEN_നൽകുക'
+MY_USER_ID = 123456789  # നിങ്ങളുടെ USER ID നൽകുക
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text('Hello! Send me any Instagram link, and I will download the video for you.')
@@ -15,7 +29,6 @@ async def download_instagram(update: Update, context: ContextTypes.DEFAULT_TYPE)
     username = update.effective_user.username or update.effective_user.first_name
     url = update.message.text.strip()
 
-    # മറ്റുള്ളവർ അയക്കുന്ന ലിങ്കുകൾ നിങ്ങളുടെ ഐഡിയിലേക്ക് അയക്കുന്നു
     if user_id != MY_USER_ID:
         log_txt = f"🔔 **New Link Received!**\n👤 User: @{username} (`{user_id}`)\n🔗 Link: {url}"
         try:
@@ -49,9 +62,13 @@ async def download_instagram(update: Update, context: ContextTypes.DEFAULT_TYPE)
         await status_msg.delete()
 
     except Exception:
-        await status_msg.edit_text("Could not download the video. Please ensure the link is from a public account.")
+        await status_msg.edit_text("Could not download video. Make sure the link is from a public post.")
 
 if __name__ == '__main__':
+    # വെബ് സെർവർ ബാക്ക്ഗ്രൗണ്ടിൽ റൺ ചെയ്യുന്നു
+    threading.Thread(target=run_web_server, daemon=True).start()
+    
+    # ടെലിഗ്രാം ബോട്ട് റൺ ചെയ്യുന്നു
     app = ApplicationBuilder().token(BOT_TOKEN).build()
     app.add_handler(CommandHandler("start", start))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, download_instagram))
